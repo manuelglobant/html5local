@@ -1,9 +1,11 @@
+/*global indexedDB, appCacheNanny*/
+appCacheNanny.start();
 (function () {
   'use strict';
-  /*global indexedDB*/
 
   var db;
-  var status = document.getElementById('status');
+  var logs = [];
+  var logUl = document.getElementById('log-list');
   var text = document.getElementById('post-form-text');
   var postUl = document.getElementById('post-list');
 
@@ -13,7 +15,7 @@
     if (!e) e = window.event;
     var keyCode = e.keyCode || e.which;
     if (keyCode === 13) {
-      savePost(this.value, logPost);
+      savePost(this.value, logPostSave);
     }
   };
 
@@ -23,13 +25,24 @@
       postList.push('<li>' + post + '</li>');
     });
     postUl.innerHTML = postList.join('');
-  } 
+  }
 
   // utils
 
-  var logPost = function () {
-    status.innerHTML = 'Saved post ' + getDate();
+  var logPostSave = function () {
+    logs.push('<li>Saved post ' + getDate() + '</li>');
+    logUl.innerHTML = logs.join('');
     text.value = '';
+  };
+
+  var logDBOpen = function () {
+    logs.push('<li>Opened database ' + getDate() + '</li>');
+    logUl.innerHTML = logs.join('');
+  };
+
+  var logDBError = function (error) {
+    logs.push('<li>' + error + ' ' + getDate() + '</li>');
+    logUl.innerHTML = logs.join('');
   };
 
   function getDate () {
@@ -40,9 +53,7 @@
 
   // db
 
-  openDB(function () {
-    status.innerHTML = 'Opened poster database.';
-  });
+  openDB(logDBOpen);
 
   function openDB (callback) {
     var v = 1;
@@ -50,22 +61,19 @@
 
     req.onupgradeneeded = function(e) {
       db = e.target.result;
-      e.target.transaction.onerror = errorDB;
       db.createObjectStore('posts', { autoIncrement: true });
       callback();
     };
 
     req.onsuccess = function (e) {
       db = e.target.result;
-      callback();
       getPosts();
+      callback();
     };
 
-    req.onerror = errorDB;
-  }
-
-  function errorDB (e) {
-    status.innerHTML = 'An error has ocurred: ' + e.target.error.message;
+    req.onerror = function (e) {
+      logDBError(e.target.error.message);
+    };
   }
 
   function savePost (post, callback) {
