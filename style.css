@@ -1,0 +1,7 @@
+.pure-g--gutter > div > * {
+  margin: 0 0.5rem;
+}
+
+p#status, div#post-form p, input#post-form-text {
+  margin-top: 1em;
+}
