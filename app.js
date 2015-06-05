@@ -1,15 +1,14 @@
 /*global indexedDB, appCacheNanny*/
-appCacheNanny.start();
+appCacheNanny.start({checkInterval: 1000});
 (function () {
   'use strict';
-
   var db;
   var logs = [];
   var logUl = document.getElementById('log-list');
   var text = document.getElementById('post-form-text');
   var postUl = document.getElementById('post-list');
 
-  // ui
+  // uiwww
 
   text.onkeypress = function (e) {
     if (!e) e = window.event;
