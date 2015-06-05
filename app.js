@@ -1,5 +1,5 @@
 /*global indexedDB, appCacheNanny*/
-appCacheNanny.start({checkInterval: 1000});
+appCacheNanny.start({checkInterval: 10000});
 (function () {
   'use strict';
   var db;
