@@ -5,14 +5,15 @@
 
   text = document.getElementById('post-form-text');
   postsUl = document.getElementById('post-list');
-  dblocal = new PouchDB('poster');
-  remotedb = new PouchDB('http://localhost:5984/posts/');
+  dblocal = new PouchDB('posts');
+  remotedb = new PouchDB('http://localhost:5984/posts');
 
   text.onkeypress = function (e) {
     if (!e) e = window.event;
     var keyCode = e.keyCode || e.which;
     if (keyCode === 13) {
       savePost(this.value);
+      this.value = '';
     }
   };
 

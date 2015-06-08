@@ -1,19 +1,18 @@
-/* global indexedDB*/
 (function () {
+  /* global indexedDB, console*/
   'use strict';
-  var db;
-  var logs = [];
-  var logUl = document.getElementById('log-list');
-  var text = document.getElementById('post-form-text');
-  var postUl = document.getElementById('post-list');
+  var db, text, postsUl;
 
-  // uiwww
+  text = document.getElementById('post-form-text');
+  postsUl = document.getElementById('post-list');
+
+  // ui
 
   text.onkeypress = function (e) {
     if (!e) e = window.event;
     var keyCode = e.keyCode || e.which;
     if (keyCode === 13) {
-      savePost(this.value, logPostSave);
+      savePost(this.value);
     }
   };
 
@@ -22,36 +21,12 @@
     posts.map(function (post) {
       postList.push('<li>' + post + '</li>');
     });
-    postUl.innerHTML = postList.join('');
-  }
-
-  // utils
-
-  var logPostSave = function () {
-    logs.push('<li>Saved post ' + getDate() + '</li>');
-    logUl.innerHTML = logs.join('');
-    text.value = '';
-  };
-
-  var logDBOpen = function () {
-    logs.push('<li>Opened database ' + getDate() + '</li>');
-    logUl.innerHTML = logs.join('');
-  };
-
-  var logDBError = function (error) {
-    logs.push('<li>' + error + ' ' + getDate() + '</li>');
-    logUl.innerHTML = logs.join('');
-  };
-
-  function getDate () {
-    var now = new Date();
-    return now.getDay() + '/' + now.getMonth() + '/' + now.getFullYear() +
-    ' ' + now.getHours() + ':' + now.getMinutes();
+    postsUl.innerHTML = postList.join('');
   }
 
   // db
 
-  openDB(logDBOpen);
+  openDB();
 
   function openDB (callback) {
     var v = 1;
@@ -70,7 +45,7 @@
     };
 
     req.onerror = function (e) {
-      logDBError(e.target.error.message);
+      console.log(e.target.error.message);
     };
   }
 

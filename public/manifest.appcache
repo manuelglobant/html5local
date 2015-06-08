@@ -1,14 +1,14 @@
 CACHE MANIFEST
 
-#24
+#1
 CACHE:
 /
 index.html
-pouchdb.min.js
-app-pouch.js
-app.js
 pure.min.css
 style.css
+pouchdb.js
+app-pouch.js
+app.js
 
 FALLBACK:
 / /
