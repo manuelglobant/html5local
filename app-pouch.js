@@ -1,17 +1,21 @@
 /* global PouchDB, console*/
 (function () {
   'use strict';
-
   var dblocal, dbremote;
   dblocal = new PouchDB('posts');
   dbremote = new PouchDB('http://localhost:5984/posts');
 
   var ui = {
     text: undefined,
-    postsUl: undefined
+    postsUl: {
+      element: undefined,
+      docs: [],
+      lis: []
+    }
   };
+
   ui.text = document.getElementById('post-form-text');
-  ui.postsUl = document.getElementById('post-list');
+  ui.postsUl.element = document.getElementById('post-list');
   
 
   ui.text.onkeypress = function (e) {
@@ -23,12 +27,12 @@
     }
   };
 
-  function renderPosts (posts) {
-    var lis = [];
-    posts.map(function(post) {
-      lis.push('<li>' + post.doc.name + '</li>');
+  function renderPosts () {
+    ui.postsUl.lis = [];
+    ui.postsUl.docs.map(function(doc) {
+      ui.postsUl.lis.push('<li>'+ doc.name + '</li>');
     });
-    ui.postsUl.innerHTML = lis.join('');
+    ui.postsUl.element.innerHTML = ui.postsUl.lis.join('');
   }
 
   function savePost (post) {
@@ -37,18 +41,27 @@
       'name': post.toString()
     };
     dblocal.put(newPost);
+    PouchDB.sync(dblocal, dbremote);
+    getPosts();
   }
 
   function getPosts () {
     dblocal.allDocs({
-      include_docs: true, 
-      attachments: true
-    }).then(function (result) {
-      renderPosts(result.rows);
-    }).catch(function (err) {
-      console.log(err);
-    });
+        include_docs: true
+      })
+      .then(function (result) {
+        console.log(result);
+        ui.postsUl.docs = [];
+        result.rows.map(function(row) {
+          ui.postsUl.docs.push(row.doc);
+        });
+        renderPosts();
+        console.log(ui.postsUl.docs);
+      }).catch(function (err) {
+        console.log(err);
+      });
   }
-  getPosts();
+
+  getPosts(); 
 }());
 
