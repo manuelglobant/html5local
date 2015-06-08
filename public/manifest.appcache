@@ -1,6 +1,6 @@
 CACHE MANIFEST
 
-#1
+#2
 CACHE:
 /
 index.html
@@ -11,4 +11,6 @@ app-pouch.js
 app.js
 
 FALLBACK:
-/ /
+*
+http://
+https://*
