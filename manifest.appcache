@@ -1,0 +1,15 @@
+CACHE MANIFEST
+
+#2
+CACHE:
+index.html
+pure.min.css
+style.css
+pouchdb.js
+app-pouch.js
+app.js
+
+FALLBACK:
+*
+http://*
+https://*
