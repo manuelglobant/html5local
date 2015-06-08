@@ -1,15 +1,14 @@
 CACHE MANIFEST
 
-#8
+#24
 CACHE:
 /
 index.html
-appcache-loader.html
-appcache-nanny.js
-index.html
+pouchdb.min.js
+app-pouch.js
 app.js
-style.css
 pure.min.css
+style.css
 
 FALLBACK:
 / /

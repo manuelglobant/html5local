@@ -1,40 +1,105 @@
-/* global PouchDB*/
+/* global indexedDB*/
 (function () {
   'use strict';
-  var dblocal, remotedb, _id, posts, text, postsUl;
+  var db;
+  var logs = [];
+  var logUl = document.getElementById('log-list');
+  var text = document.getElementById('post-form-text');
+  var postUl = document.getElementById('post-list');
 
-  text = document.getElementById('post-form-text');
-  postsUl = document.getElementById('post-list');
-  dblocal = new PouchDB('poster');
-  remotedb = new PouchDB('http://localhost:5984/poster');
+  // uiwww
 
   text.onkeypress = function (e) {
     if (!e) e = window.event;
     var keyCode = e.keyCode || e.which;
     if (keyCode === 13) {
-      savePost(this.value);
+      savePost(this.value, logPostSave);
     }
   };
 
-  function savePost (post) {
-    var newPost = {
-      '_id': _id.toString(),
-      'name': post.toString()
+  function renderPosts (posts) {
+    var postList = [];
+    posts.map(function (post) {
+      postList.push('<li>' + post + '</li>');
+    });
+    postUl.innerHTML = postList.join('');
+  }
+
+  // utils
+
+  var logPostSave = function () {
+    logs.push('<li>Saved post ' + getDate() + '</li>');
+    logUl.innerHTML = logs.join('');
+    text.value = '';
+  };
+
+  var logDBOpen = function () {
+    logs.push('<li>Opened database ' + getDate() + '</li>');
+    logUl.innerHTML = logs.join('');
+  };
+
+  var logDBError = function (error) {
+    logs.push('<li>' + error + ' ' + getDate() + '</li>');
+    logUl.innerHTML = logs.join('');
+  };
+
+  function getDate () {
+    var now = new Date();
+    return now.getDay() + '/' + now.getMonth() + '/' + now.getFullYear() +
+    ' ' + now.getHours() + ':' + now.getMinutes();
+  }
+
+  // db
+
+  openDB(logDBOpen);
+
+  function openDB (callback) {
+    var v = 1;
+    var req = indexedDB.open('poster', v);
+
+    req.onupgradeneeded = function(e) {
+      db = e.target.result;
+      db.createObjectStore('posts', { autoIncrement: true });
+      callback();
     };
-    dblocal.put(newPost);
-    getPosts();
-    dblocal.replicate.to(remotedb);
+
+    req.onsuccess = function (e) {
+      db = e.target.result;
+      getPosts();
+      callback();
+    };
+
+    req.onerror = function (e) {
+      logDBError(e.target.error.message);
+    };
+  }
+
+  function savePost (post, callback) {
+    var transaction = db.transaction(['posts'], 'readwrite');  
+    var postStore = transaction.objectStore('posts');
+    var req = postStore.add(post);
+
+    req.onsuccess = function () {
+      callback();
+      getPosts();
+    };
   }
 
   function getPosts () {
-    dblocal.allDocs({
-      include_docs: true
-    }).then(function (result) {
-      _id = result.rows.length;
-      posts = result;
-    });
+    var transaction = db.transaction(['posts'], 'readwrite');  
+    var postStore = transaction.objectStore('posts');
+    var postCursor = postStore.openCursor();
+    var posts = [];
+
+    postCursor.onsuccess = function (e) {
+      var cursor = e.target.result;
+
+      if (cursor) {
+        posts.push(cursor.value);
+        cursor.continue();
+      } else {
+        renderPosts(posts);
+      }
+    };
   }
-
-  getPosts();
 }());
-

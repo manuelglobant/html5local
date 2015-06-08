@@ -13,13 +13,12 @@ posterApp.get('/', function (req, res) {
   res.sendFile('index.html');
 });
 
-var posterDb;
-posterDb = nano.db.use('poster');
+var posterDb = nano.db.use('posts');
 
 if (!posterDb) {
-  nano.db.create('poster', function(err) {
+  nano.db.create('posts', function(err) {
     if (err) throw err;
-    posterDb = nano.db.use('poster');
+    posterDb = nano.db.use('posts');
   });
 }
 

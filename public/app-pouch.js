@@ -6,7 +6,7 @@
   text = document.getElementById('post-form-text');
   postsUl = document.getElementById('post-list');
   dblocal = new PouchDB('poster');
-  remotedb = new PouchDB('http://localhost:5984/poster');
+  remotedb = new PouchDB('http://localhost:5984/posts/');
 
   text.onkeypress = function (e) {
     if (!e) e = window.event;
