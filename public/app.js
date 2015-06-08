@@ -1,13 +1,12 @@
-/* global PouchDB, console */
+/* global PouchDB*/
 (function () {
   'use strict';
-  var db, rdb, _id, posts;
-  var text = document.getElementById('post-form-text'),
-    postUl = document.getElementById('post-list');
-  db = new PouchDB('poster');
-  rdb = new PouchDB('http://localhost:5984/poster');
+  var dblocal, remotedb, _id, posts, text, postsUl;
 
-  // ui
+  text = document.getElementById('post-form-text');
+  postsUl = document.getElementById('post-list');
+  dblocal = new PouchDB('poster');
+  remotedb = new PouchDB('http://localhost:5984/poster');
 
   text.onkeypress = function (e) {
     if (!e) e = window.event;
@@ -22,15 +21,14 @@
       '_id': _id.toString(),
       'name': post.toString()
     };
-    db.put(newPost);
+    dblocal.put(newPost);
     getPosts();
-    db.replicate.to(rdb);
+    dblocal.replicate.to(remotedb);
   }
 
   function getPosts () {
-    db.allDocs({
-      include_docs: true, 
-      attachments: true
+    dblocal.allDocs({
+      include_docs: true
     }).then(function (result) {
       _id = result.rows.length;
       posts = result;

@@ -9,10 +9,8 @@ var posterApp = require('express')();
 posterApp.use(express.static(__dirname + '/public'));
 posterApp.use(bodyParser.json());
 posterApp.use(bodyParser.urlencoded({ extended: true}));
-
 posterApp.get('/', function (req, res) {
   res.sendFile('index.html');
-  res.end();
 });
 
 var posterDb;
@@ -25,7 +23,7 @@ if (!posterDb) {
   });
 }
 
-posterApp.listen(8000, function(){
+posterApp.listen(8000, function() {
   console.log('listening on *:8000');
 });
 
