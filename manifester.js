@@ -7,19 +7,23 @@ var manifest = {
   encoding: 'utf8'
 };
 
-fs.readFile(manifest.dir, manifest.encoding, function (err, data) {
-  if (err) {
-    return console.log(err);
-  }
-  
-  // var result = data.replace(/index/g, 'indexer');
+var update = function () {
+  fs.readFile(manifest.dir, manifest.encoding, function (err, data) {
+    if (err) {
+      return console.log(err);
+    }
 
-  
-  // var randVersion = Math.round(Math.random() * 1000 + 1);
-  var newVersion = data.substr(3);
-  console.log(newVersion);
+    data = data.split('\n');
+    data[2] = '#' + new Date().toISOString();
+    data = data.join('\n');
+    var result = data;
 
-  // fs.writeFile(manifest.dir, result, manifest.encoding, function (err) {
-  //    if (err) return console.log(err);
-  // });
-});
+    fs.writeFile(manifest.dir, result, manifest.encoding, function (err) {
+      if (err) return console.log(err);
+    });
+  });
+};
+
+setInterval(function(){
+  update();
+}, 1000);
