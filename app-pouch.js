@@ -1,9 +1,27 @@
-/* global PouchDB, console*/
+/* global PouchDB, console, Offline*/
 (function () {
   'use strict';
+  
+  Offline.options = {
+    checks: {xhr: {url: '/connection-test'}}
+  };
+
+  setInterval(function () {
+    Offline.check();
+  }, 1000);
+
   var dblocal, dbremote;
+
   dblocal = new PouchDB('posts');
   dbremote = new PouchDB('http://localhost:5984/posts');
+
+  function syncApp () {
+    PouchDB.sync(dblocal, dbremote).on('complete', getPosts);
+  }
+
+  syncApp();
+
+  Offline.on('up', syncApp);
 
   var ui = {
     text: undefined,
@@ -17,11 +35,8 @@
   ui.text = document.getElementById('post-form-text');
   ui.postsUl.element = document.getElementById('post-list');
   
-
   ui.text.onkeypress = function (e) {
-    if (!e) e = window.event;
-    var keyCode = e.keyCode || e.which;
-    if (keyCode === 13) {
+    if (e.keyCode === 13) {
       savePost(this.value);
       this.value = '';
     }
@@ -40,28 +55,30 @@
       '_id': new Date().toISOString(),
       'name': post.toString()
     };
+
     dblocal.put(newPost);
-    PouchDB.sync(dblocal, dbremote);
+    
+    if (Offline.state === 'up') {
+      PouchDB.sync(dblocal, dbremote);
+    }
+    
     getPosts();
   }
 
   function getPosts () {
-    dblocal.allDocs({
+    dblocal
+      .allDocs({
         include_docs: true
       })
       .then(function (result) {
-        console.log(result);
         ui.postsUl.docs = [];
         result.rows.map(function(row) {
           ui.postsUl.docs.push(row.doc);
         });
         renderPosts();
-        console.log(ui.postsUl.docs);
       }).catch(function (err) {
         console.log(err);
       });
   }
-
-  getPosts(); 
 }());
 

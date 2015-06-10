@@ -1,12 +1,13 @@
 CACHE MANIFEST
 
-#2015-06-08T21:39:16.369Z
+#2015-06-10T19:44:34.640Z
 CACHE:
 index.html
 pure.min.css
 style.css
 pouchdb.js
 app-pouch.js
+offline.js
 
 NETWORK:
 *
