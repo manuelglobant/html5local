@@ -1,7 +1,3 @@
-.pure-g--gutter > div > * {
-  margin: 0 0.25rem;
-}
-
 ul {
   margin: 0;
   padding: 0;
@@ -15,3 +11,4 @@ ul li, ul li input {
 p#status, div#post-form p, input#post-form-text, ul#post-list, ul#log-list {
   margin-top: 1em;
 }
+

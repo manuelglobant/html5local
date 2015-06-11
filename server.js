@@ -1,5 +1,5 @@
-'use strict';
 /*global require, __dirname*/ 
+'use strict';
 var express = require('express');
 var app = express();
 
