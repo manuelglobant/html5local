@@ -1,9 +1,12 @@
 CACHE MANIFEST
 
-#2015-06-11T18:28:21.261Z
+#2015-06-12T20:20:07.452Z
 CACHE:
+lib/jquery.min.js
+lib/materialize.min.js
 lib/pouchdb.js
 lib/offline.js
+css/materialize.min.css
 css/style.css
 index.html
 main.js

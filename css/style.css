@@ -1,14 +1,7 @@
-ul {
-  margin: 0;
-  padding: 0;
+.post-submit {
+  float: right;
 }
-
-ul li, ul li input {
-  list-style-type: none;
-  display: block;
+.card {
+  height: 250px;
+  margin-bottom: 20px;
 }
-
-p#status, div#post-form p, input#post-form-text, ul#post-list, ul#log-list {
-  margin-top: 1em;
-}
-

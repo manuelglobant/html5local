@@ -1,29 +1,26 @@
 'use strict';
 /*global require, console*/
+
 var fs = require('fs');
 
 var manifest = {
-  dir: 'manifest.appcache',
-  encoding: 'utf8'
+  dir: process.argv[2] || 'manifest.appcache',
+  content: undefined
 };
 
 var update = function () {
-  fs.readFile(manifest.dir, manifest.encoding, function (err, data) {
-    if (err) {
-      return console.log(err);
-    }
+  fs.readFile(manifest.dir, 'utf8', function (err, data) {
+    if (err) return console.log(err);
 
-    data = data.split('\n');
-    data[2] = '#' + new Date().toISOString();
-    data = data.join('\n');
-    var result = data;
+    manifest.content = data;
+    manifest.content = manifest.content.split('\n');
+    manifest.content[2] = '#' + new Date().toISOString();
+    manifest.content = manifest.content.join('\n');
 
-    fs.writeFile(manifest.dir, result, manifest.encoding, function (err) {
+    fs.writeFile(manifest.dir, manifest.content, 'utf8', function (err) {
       if (err) return console.log(err);
     });
   });
 };
 
-setInterval(function(){
-  update();
-}, 100);
+setInterval(update, process.argv[3] || 1000);
