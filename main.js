@@ -20,8 +20,6 @@ Offline.options = {
 
 Offline.on('up', syncApp);
 
-// setInterval(check, 1000);
-
 function online () {
   return Offline.state === 'on';
 }
@@ -75,6 +73,7 @@ function formSubmit (e) {
 
 function renderPosts (posts) {
   view.postsUl.lis = [];
+  
   posts.rows.map(function (row) {
     view.postsUl.lis.push(card(row.doc));
   });
