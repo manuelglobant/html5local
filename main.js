@@ -21,12 +21,11 @@ view.postsUl.element = document.getElementById('post-list');
 
 var imageDataURL;
 
-document.body.onpaste = function(event){
+document.body.onpaste = function (event) {
   var items = (event.clipboardData || event.originalEvent.clipboardData).items;
-  var mimes = JSON.stringify(items);
   var blob = items[0].getAsFile();
   imageDataURL = blob;
-  
+
   var reader = new FileReader();
   reader.onload = function (event) {
     view.postImage.src = event.target.result;
@@ -35,23 +34,27 @@ document.body.onpaste = function(event){
 }
 
 Offline.options = {
-  checks: {xhr: {url: '/connection-test'}}
+  checkOnLoad: true,
+  checks: {xhr: {url: '/connection-test'}},
+  reconnect: {
+    initialDelay: 0,
+    delay: 3
+  }
 };
 
 Offline.on('up', syncApp);
 
-syncApp();
-
 function online () {
-  return Offline.state === 'on';
-}
-
-function check () {
-  Offline.check();
+  return Offline.state === 'up';
 }
 
 function syncApp () {
-  PouchDB.sync(dblocal, dbremote).on('complete', getPosts);
+  console.log(online());
+  if (online()) {
+    PouchDB.sync(dblocal, dbremote).on('complete', getPosts);
+  } else {
+    getPosts();
+  }
 }
 
 function formSubmit (e) {
@@ -85,15 +88,14 @@ function getPosts () {
   dblocal.allDocs({
     include_docs: true
   }).then(function (result) {
-    renderPosts(result.rows);     
+    renderPosts(result.rows);
   }); 
 }
 
 function renderPosts (posts) {
-  view.postsUl.lis = [];
+  view.postsUl.element.innerHTML = '';
   posts.map(function (post) {
     dblocal.getAttachment(post.doc._rev, 'att.png').then(function (result) {
-      console.log(result);
       var reader = new FileReader();
       reader.onload = function (event) {
         post.doc.att = event.target.result;
@@ -107,8 +109,12 @@ function renderPosts (posts) {
 }
 
 function renderPost (post) {
-  view.postsUl.lis.push(card(post));
-  view.postsUl.element.innerHTML += card(post);
+  var reader = new FileReader();
+  reader.onload = function (event) {
+    post.att = event.target.result;
+    view.postsUl.element.innerHTML += card(post);
+  };
+  reader.readAsDataURL(imageDataURL);
 }
 
 function card (post) {
@@ -117,7 +123,8 @@ function card (post) {
       '<img class="activator" src="'+ post.att +'">' +
     '</div>' +
      '<div class="card-content">' +
-      '<span class="card-title activator grey-text text-darken-4">'+ post.title +' <i class="mdi-navigation-more-vert right"></i></span>' +
+      '<span class="card-title activator grey-text text-darken-4">'+ post.title + 
+      '<i class="mdi-navigation-more-vert right"></i></span>' +
       '<p><a href="#">'+ post.text +' </a></p>' +
     '</div>' +
     '<div class="card-reveal">' +
@@ -126,6 +133,9 @@ function card (post) {
     '</div>' +
   '</div>';
 }
+
+syncApp();
+
 
 
   
