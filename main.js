@@ -6,7 +6,8 @@ var view = {
   postsUl: {
     element: undefined,
     lis: []
-  }
+  },
+  titles: undefined
 };
 
 view.postForm = document.getElementById('post-form');
@@ -20,22 +21,32 @@ Offline.options = {
 
 Offline.on('up', syncApp);
 
+syncApp();
+
 function online () {
   return Offline.state === 'on';
 }
 
 function check () {
   Offline.check();
-  syncApp();
 }
 
 function syncApp () {
-  PouchDB
-    .sync(dblocal, dbremote)
-    .on('complete', getPosts);
+  PouchDB.sync(dblocal, dbremote).on('complete', getPosts);
 }
 
-syncApp();
+function formSubmit (e) {
+  e.preventDefault();
+
+  var post = {
+    title: view.postTitle.value,
+    text: view.postText.value
+  };
+  
+  savePost(post).then(function () {
+    renderPost(post);
+  });
+}
 
 function savePost (post) {
   var newPost = {
@@ -47,28 +58,13 @@ function savePost (post) {
   return dblocal.put(newPost);
 }
 
-function getPosts () {
-  dblocal
-    .allDocs({
-      include_docs: true
-    })
-    .then(function (result) {
-      renderPosts(result);      
-    }); 
-}
-
-function formSubmit (e) {
-  e.preventDefault();
-
-  var post = {
-    title: view.postTitle.value,
-    text: view.postText.value
-  };
-  
-  savePost(post).then(function() {
-    view.postText.value = view.postTitle.value = '';
-    getPosts();
-  });
+function getPosts (info) {
+  dblocal.allDocs({
+    include_docs: true
+  })
+  .then(function (result) {
+    renderPosts(result);     
+  }); 
 }
 
 function renderPosts (posts) {
@@ -81,13 +77,22 @@ function renderPosts (posts) {
   view.postsUl.element.innerHTML = view.postsUl.lis.join('');
 }
 
+function renderPost (post) {
+  view.postsUl.lis.push(card(post));
+  view.postsUl.element.innerHTML += card(post);
+}
+
+function handleClick (post) {
+  console.log(post);
+}
+
 function card (post) {
   return '<div class="card col s3">' +
     '<div class="card-image waves-effect waves-block waves-light">' +
       '<img class="activator" src="img/screen.png">' +
     '</div>' +
      '<div class="card-content">' +
-      '<span class="card-title activator grey-text text-darken-4">'+ post.title +' <i class="mdi-navigation-more-vert right"></i></span>' +
+      '<span onclick="return handleClick("'+ post._id +'");" class="card-title activator grey-text text-darken-4">'+ post.title +' <i class="mdi-navigation-more-vert right"></i></span>' +
       '<p><a href="#">'+ post.text +' </a></p>' +
     '</div>' +
     '<div class="card-reveal">' +
