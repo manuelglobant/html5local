@@ -1,15 +1,9 @@
-var dbremote = new PouchDB('http://localhost:5984/posts');
-var dblocal = new PouchDB('posts');
-
 var view = {
   postText: undefined,
   postTitle: undefined,
   postImage: undefined,
   postImageSave: undefined,
-  postsUl: {
-    element: undefined,
-    lis: []
-  }
+  postsUl: undefined
 };
 
 view.postForm = document.getElementById('post-form');
@@ -17,21 +11,7 @@ view.postTitle = document.getElementById('post-title');
 view.postText = document.getElementById('post-text');
 view.postImage = document.getElementById('post-image');
 view.postImageSave = document.getElementById('post-image-save');
-view.postsUl.element = document.getElementById('post-list');
-
-var imageDataURL;
-
-document.body.onpaste = function (event) {
-  var items = (event.clipboardData || event.originalEvent.clipboardData).items;
-  var blob = items[0].getAsFile();
-  imageDataURL = blob;
-
-  var reader = new FileReader();
-  reader.onload = function (event) {
-    view.postImage.src = event.target.result;
-  };
-  reader.readAsDataURL(blob);
-}
+view.postsUl = document.getElementById('post-list');
 
 Offline.options = {
   checkOnLoad: true,
@@ -42,14 +22,22 @@ Offline.options = {
   }
 };
 
+setInterval(check, 1000);
+
 Offline.on('up', syncApp);
+
+function check () {
+  Offline.check();
+}
 
 function online () {
   return Offline.state === 'up';
 }
 
+var dbremote = new PouchDB('http://localhost:5984/posts');
+var dblocal = new PouchDB('posts');
+
 function syncApp () {
-  console.log(online());
   if (online()) {
     PouchDB.sync(dblocal, dbremote).on('complete', getPosts);
   } else {
@@ -65,12 +53,7 @@ function formSubmit (e) {
   };
   savePost(post).then(function (info) {
     var attachment = imageDataURL;
-    dblocal.putAttachment(info.rev, 'att.png', attachment, 'image/png')
-      .then(function (result) {
-        console.log("att saved.");
-      }).catch(function (err) {
-        console.log(err);
-      });
+    dblocal.putAttachment(info.rev, 'att.png', attachment, 'image/png');
     renderPost(post);
   });
 }
@@ -93,18 +76,17 @@ function getPosts () {
 }
 
 function renderPosts (posts) {
-  view.postsUl.element.innerHTML = '';
+  view.postsUl.innerHTML = '';
   posts.map(function (post) {
-    dblocal.getAttachment(post.doc._rev, 'att.png').then(function (result) {
-      var reader = new FileReader();
-      reader.onload = function (event) {
-        post.doc.att = event.target.result;
-        view.postsUl.element.innerHTML += card(post.doc);
-      };
-      reader.readAsDataURL(result);
-    }).catch(function (err) {
-      console.log(err);
-    });
+    dblocal.getAttachment(post.doc._rev, 'att.png')
+      .then(function (result) {
+        var reader = new FileReader();
+        reader.onload = function (event) {
+          post.doc.att = event.target.result;
+          view.postsUl.innerHTML += card(post.doc);
+        };
+        reader.readAsDataURL(result);
+      });
   });
 }
 
@@ -112,9 +94,22 @@ function renderPost (post) {
   var reader = new FileReader();
   reader.onload = function (event) {
     post.att = event.target.result;
-    view.postsUl.element.innerHTML += card(post);
+    view.postsUl.innerHTML += card(post);
   };
   reader.readAsDataURL(imageDataURL);
+}
+
+document.body.onpaste = function (event) {
+  var imageDataURL;
+  var items = (event.clipboardData || event.originalEvent.clipboardData).items;
+  var blob = items[0].getAsFile();
+  imageDataURL = blob;
+
+  var reader = new FileReader();
+  reader.onload = function (event) {
+    view.postImage.src = event.target.result;
+  };
+  reader.readAsDataURL(blob);
 }
 
 function card (post) {
@@ -134,7 +129,6 @@ function card (post) {
   '</div>';
 }
 
-syncApp();
 
 
 
