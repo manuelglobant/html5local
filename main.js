@@ -5,6 +5,8 @@ var view = {
   postImageSave: undefined,
   postsUl: undefined
 };
+var imageDataURL;
+
 
 view.postForm = document.getElementById('post-form');
 view.postTitle = document.getElementById('post-title');
@@ -37,11 +39,14 @@ function online () {
 var dbremote = new PouchDB('http://localhost:5984/posts');
 var dblocal = new PouchDB('posts');
 
+getPosts();
+
 function syncApp () {
   if (online()) {
+    dbremote = new PouchDB('http://localhost:5984/posts');
     PouchDB.sync(dblocal, dbremote).on('complete', getPosts);
   } else {
-    getPosts();
+    alert("Need a connection to sync.");
   }
 }
 
@@ -100,7 +105,6 @@ function renderPost (post) {
 }
 
 document.body.onpaste = function (event) {
-  var imageDataURL;
   var items = (event.clipboardData || event.originalEvent.clipboardData).items;
   var blob = items[0].getAsFile();
   imageDataURL = blob;
