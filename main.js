@@ -37,6 +37,12 @@ function syncApp () {
   if (online()) {
     dbremote = new PouchDB('http://localhost:5984/posts');
     PouchDB.sync(dblocal, dbremote).on('complete', getPosts);
+  } else {
+    setTimeout(function () {
+      app.postStatus.innerHTML = '';
+    }, 2000);
+    
+    app.postStatus.innerHTML = '<p>Need a connection sync <i class="mdi-action-announcement"></i></p>';
   }
 }
 
