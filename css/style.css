@@ -5,6 +5,10 @@
   height: 250px;
   margin-bottom: 20px;
 }
-#post-image {
+.post-image {
   max-width: 100%;
+}
+#post-image-save {
+  position: relative;
+  display: block;
 }

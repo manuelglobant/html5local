@@ -1,14 +1,25 @@
 CACHE MANIFEST
 
-#2015-06-18T15:26:23.321Z
+#2015-06-22T19:38:53.771Z
 CACHE:
+#fonts
+font/roboto/Roboto-Regular.ttf
+font/roboto/Roboto-Regular.woff
+font/roboto/Roboto-Regular.woff2
+font/material-design-icons/Material-Design-Icons.ttf
+font/material-design-icons/Material-Design-Icons.woff
+font/material-design-icons/Material-Design-Icons.woff2
+#libs
 lib/jquery.min.js
 lib/materialize.min.js
 lib/pouchdb.js
 lib/offline.js
+#css
 css/materialize.min.css
 css/style.css
+#html
 index.html
+#js
 main.js
 
 NETWORK:

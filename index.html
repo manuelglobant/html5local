@@ -9,46 +9,59 @@
 <body>  
   <div class="container">
     <div class="row">
-      <button class="btn waves-effect waves-light" onclick="return syncApp()" name="action">Sync
-        <i class="mdi-content-sync right"></i>
-      </button>
-      <form class="col s12" id="post-form" action="" onsubmit="return formSubmit(event)">
+      <form 
+        class="col s12" 
+        id="post-form" 
+        action="" 
+        onsubmit="return formSubmit(event)">
         <div class="row">
+          <div id="post-status">
+          </div>
           <div class="file-field input-field col s6">
-            <a id="post-image-save" class="waves-effect waves-light btn"><class="mdi-action-perm-media left"></i>Print Screen & PASTE</a>
-            <img id="post-image" src="" alt="">
+            <a id="post-image-save" class="waves-effect waves-light btn">
+              <i class="mdi-action-perm-media left"></i>
+              Paste print screen
+            </a>
+            <div id="post-image"></div>
           </div>
         </div>
-        <br>
-        <br>
-        <br>
-        <br>
+
         <div class="row">
           <div class="input-field col s6">
             <i class="mdi-content-create prefix"></i>
             <input id="post-title" type="text" class="validate">
             <label for="post-title">Title</label>
           </div>
+
           <div class="input-field col s6">
             <i class="mdi-content-create prefix"></i>
             <input id="post-text" type="text" class="validate">
             <label for="post-text">Description</label>
           </div>
         </div>
-        <button class="btn post-submit waves-effect waves-light" type="submit" name="action">Submit
-          <i class="mdi-content-send right"></i>
+
+        <button 
+          id="posts-sync"
+          class="btn waves-effect waves-light" 
+          onclick="return syncApp()" 
+          name="action">
+          Sync <i class="mdi-action-autorenew right"></i>
+        </button>
+
+        <button 
+          class="btn post-submit waves-effect waves-light" 
+          type="submit" 
+          name="action">
+          Submit <i class="mdi-content-send right"></i>
         </button>
       </form>
     </div>
+
     <div class="row">
       <ul id="post-list"></ul>
     </div>
   </div>
-  
-  <div class="">
-    
-  </div>
-  
+
   <script src="lib/jquery.min.js"></script>
   <script src="lib/materialize.min.js"></script>
   <script type="text/javascript" src="lib/offline.js"></script>
