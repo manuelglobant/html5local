@@ -16,7 +16,7 @@ app.postImageSave = document.getElementById('post-image-save');
 app.postsUl = document.getElementById('post-list');
 app.postsSync = document.getElementById('posts-sync');
 
-var dbremote = new PouchDB('http://localhost:5984/posts');
+var dbremote = new PouchDB('http://localhost:5984/posts', {skipSetup: true});
 var dblocal = new PouchDB('posts');
 
 setInterval(check, 5000);
@@ -57,17 +57,22 @@ function getPosts () {
 function renderPosts (posts) {
   app.postsUl.innerHTML = '';
   posts.map(function (post) {
-    dblocal.getAttachment(post.doc._rev, 'att.png')
-      .then(function (result) {
-        var reader = new FileReader();
+    debugger;
+    if (post.doc.title !== undefined && post.doc.text !== undefined) {
+      dblocal.getAttachment(post.doc._rev, 'att.png')
+        .then(function (result) {
+          var reader = new FileReader();
 
-        reader.onload = function (event) {
-          post.doc.att = event.target.result;
-          app.postsUl.innerHTML += card(post.doc);
-        };
+          reader.onload = function (event) {
+            post.doc.att = event.target.result;
+            app.postsUl.innerHTML += card(post.doc);
+          };
 
-        reader.readAsDataURL(result);
-      });
+          reader.readAsDataURL(result);
+        }).catch(function (err) {
+          console.log('a', err);
+        });
+    }
   });
 }
 
