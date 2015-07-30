@@ -68,8 +68,6 @@ function renderPosts (posts) {
           };
 
           reader.readAsDataURL(result);
-        }).catch(function (err) {
-          console.log('a', err);
         });
     }
   });
