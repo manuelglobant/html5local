@@ -51,7 +51,7 @@ function getPosts () {
     include_docs: true
   }).then(function (result) {
     renderPosts(result.rows);
-  }); 
+  });
 }
 
 function renderPosts (posts) {
@@ -71,7 +71,7 @@ function renderPosts (posts) {
   });
 }
 
-function formSubmit (e) {
+function submitForm (e) {
   e.preventDefault();
 
   var post = {
@@ -144,8 +144,6 @@ document.body.onpaste = function (event) {
   };
   reader.readAsDataURL(blob);
 };
-
-// template
 
 function card (post) {
   return '<div class="card col s3">' +
