@@ -57,7 +57,6 @@ function getPosts () {
 function renderPosts (posts) {
   app.postsUl.innerHTML = '';
   posts.map(function (post) {
-    debugger;
     if (post.doc.title !== undefined && post.doc.text !== undefined) {
       dblocal.getAttachment(post.doc._rev, 'att.png')
         .then(function (result) {
